@@ -1,0 +1,16 @@
+.tasks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.btn-toggle {
+    width: fit-content;
+    padding: 10px 20px;
+    background-color: #00ea94;
+    color: #1e1e2d;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+}
