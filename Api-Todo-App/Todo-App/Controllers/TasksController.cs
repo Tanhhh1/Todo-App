@@ -57,7 +57,7 @@ namespace API.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> GetMyTasks()
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userId = int.Parse(User.FindFirstValue("id")!);
             var tasks = await _taskService.GetByUserIdAsync(userId);
             return Ok(tasks);
         }
@@ -66,7 +66,7 @@ namespace API.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> GetMyTaskById(int id)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userId = int.Parse(User.FindFirstValue("id")!);
             var tasks = await _taskService.GetByUserIdAsync(userId);
             var task = tasks.FirstOrDefault(t => t.Id == id);
             if (task is null)
@@ -79,7 +79,7 @@ namespace API.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> UpdateMyTaskStatus(int id, [FromBody] UpdateStatusRequest request)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userId = int.Parse(User.FindFirstValue("id")!);
             var task = await _taskService.UpdateMyTaskStatusAsync(id, request, userId);
             return Ok(task);
         }            

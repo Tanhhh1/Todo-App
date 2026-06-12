@@ -30,10 +30,10 @@ public class JwtService : IJwtService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim("id",       user.Id.ToString()),
+            new Claim("email",    user.Email),
+            new Claim("username", user.Username),
+            new Claim("role",     user.Role.ToString())
         };
 
         var token = new JwtSecurityToken(
@@ -45,5 +45,39 @@ public class JwtService : IJwtService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public IEnumerable<Claim>? DecodeToken(string token)
+    {
+        if (string.IsNullOrEmpty(token)) return null;
+
+        var jwtSettings = _configuration.GetSection("JwtConfiguration");
+        var secretKey = jwtSettings["SecretKey"]!;
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = key,
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidateAudience = true,
+            ValidAudience = jwtSettings["Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+            return principal.Claims;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Application.DTOs.Users;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Domain.Enum;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Application.Services
 {
@@ -17,7 +19,7 @@ namespace Application.Services
         public async Task<IEnumerable<UserResponse>> GetAllAsync()
         {
             return await _userRepo
-                .GetByCondition()
+                .GetByCondition(u => u.Role == UserRole.User)
                 .Select(u => new UserResponse
                 {
                     Id = u.Id,
